@@ -26,12 +26,12 @@ mkdir build_64
 cd build_64
 
 
-cmake.exe ../../ ^
--G "Visual Studio 15 2017 Win64" ^
+cmake.exe ../../../ ^
+-G "Visual Studio 16 2019" -A x64 ^
 -DSPEECH_API_GOOGLE_HTTP_OLD=ON ^
 -DOBS_SOURCE_DIR='%DepsBaseOBS%\obs_src\' ^
 -DOBS_LIB_DIR='%DepsBaseOBS%\obs_src\build_64\' ^
--DQT_DIR='%DepsBaseOBS%\Qt\5.10.1\msvc2017_64' ^
+-DQT_DIR='%DepsBaseOBS%\Qt\5.15.2\msvc2019_64' ^
 "%API_OR_UI_KEY_ARG%"
 REM -DCMAKE_BUILD_TYPE=Release ^
 REM -DBUILD_64=ON
@@ -55,12 +55,12 @@ mkdir build_32
 cd build_32
 cd
 
-cmake.exe ../../  ^
--G "Visual Studio 15 2017" ^
+cmake.exe ../../../  ^
+-G "Visual Studio 16 2019" -A Win32 ^
 -DSPEECH_API_GOOGLE_HTTP_OLD=ON ^
 -DOBS_SOURCE_DIR='%DepsBaseOBS%\obs_src\' ^
 -DOBS_LIB_DIR='%DepsBaseOBS%\obs_src\build_32\' ^
--DQT_DIR='%DepsBaseOBS%\Qt\5.10.1\msvc2017' ^
+-DQT_DIR='%DepsBaseOBS%\Qt\5.15.2\msvc2019' ^
 "%API_OR_UI_KEY_ARG%"
 REM -DCMAKE_BUILD_TYPE=Release ^
 REM -DBUILD_32=ON
@@ -77,8 +77,37 @@ REM dir build_32
 REM cd
 
 :: copy the cmake processed file with version_string
-copy build_64\CI\post-install-script-win.cmd post-install-script-win.cmd
+copy build_64\CI\http\install-script-win.cmd install-script-win.cmd
 REM type post-install-script-win.cmd
 
-dir
+cd build_32
+cmake --build . --config RelWithDebInfo
+cd ..
 
+cd build_64
+cmake --build . --config RelWithDebInfo
+cd ..
+
+dir
+REM this just creates zip files with the plugin dll (and the dependency .dlls) in the obs plugin folder structure
+
+set OBSPLUGIN=release\Closed_Captions_Plugin__v${VERSION_STRING}_Windows\obs-plugins\
+echo plugin path: %OBSPLUGIN%\
+
+mkdir %OBSPLUGIN%\
+mkdir %OBSPLUGIN%\32bit
+mkdir %OBSPLUGIN%\64bit
+
+
+
+copy build_32\RelWithDebInfo\obs_google_caption_plugin.dll %OBSPLUGIN%\32bit\obs_google_caption_plugin.dll
+copy build_64\RelWithDebInfo\obs_google_caption_plugin.dll %OBSPLUGIN%\64bit\obs_google_caption_plugin.dll
+
+REM dir %OBSPLUGIN%\32bit
+REM dir %OBSPLUGIN%\64bit
+
+7z a -r release\Closed_Captions_Plugin__v${VERSION_STRING}_Windows.zip %CD%\release\Closed_Captions_Plugin__v${VERSION_STRING}_Windows
+7z a -r release\Closed_Captions_Plugin__v${VERSION_STRING}_Windows_plugins.zip %CD%\release\Closed_Captions_Plugin__v${VERSION_STRING}_Windows\obs-plugins
+
+
+dir d:\

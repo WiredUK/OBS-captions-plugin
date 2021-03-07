@@ -56,9 +56,9 @@ if (NOT OBS_LIB_DIR)
     message(FATAL_ERROR "OBS_LIB_DIR not set")
 endif ()
 
-configure_file(CI/post-install-script-win.cmd CI/post-install-script-win.cmd)
-configure_file(CI/post-install-script-osx.sh CI/post-install-script-osx.sh)
-configure_file(CI/post-install-script-linux.sh CI/post-install-script-linux.sh)
+configure_file(CI/http/install-script-win.cmd CI/http/install-script-win.cmd)
+configure_file(CI/http/install-script-osx.sh CI/http/install-script-osx.sh)
+configure_file(CI/http/install-script-linux.sh CI/http/install-script-linux.sh)
 
 add_subdirectory(lib/caption_stream)
 
